@@ -9,20 +9,11 @@
 
 > **Central Philosophy**: *"Industrial AI becomes trustworthy when the LLM orchestrates specialized engineering tools whose outputs can be independently verified."*
 
-## Resume-ready summary
+## Overview
 
-GridLens is a LangGraph-orchestrated, deterministic, evidence-constrained investigation system for substation protection events. It correlates COMTRADE oscillography, sequence-of-events logs, topology, configuration validation, technical documentation, and incident history into auditable facts, supported inferences, and explicit abstentions.
-
-Highlights:
-
-- Built a typed Python/FastAPI backend and Next.js engineering console around a six-layer provenance model, with conditional LangGraph routing and replaceable vector/topology repository boundaries.
-- Implemented IEEE C37.111-style COMTRADE parsing, RMS/peak signal analysis, digital transition detection, and truncation-aware abstention.
-- Added deterministic hypothesis scoring, exact claim-to-evidence verification, contradiction lifecycle tracking, and two-person simulated-action approval.
-- Validated with 15 automated tests and a 26-case synthetic regression benchmark: 100% case pass rate, 100% diagnosis/tool-selection/abstention/contradiction checks, and 0% unsupported-claim leakage.
-
-This is a research/demo system using seeded OGS-01 data. It is not connected to live operational technology.
-
-For a concise industrial-AI presentation, see the [Siemens interview brief](/Users/aaravsingh/Desktop/temp-gen/docs/siemens-interview.md).
+GridLens is a research/demo system for evidence-constrained investigation of
+substation protection events. It uses seeded OGS-01 data and is not connected
+to live operational technology.
 
 ---
 
