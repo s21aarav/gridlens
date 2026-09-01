@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: gridlens-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=gridlens_password
+      - DATABASE_URL=postgresql://gridlens:gridlens_password@postgres:5432/gridlens_db
+      - LLM_PROVIDER=mock
+    depends_on:
+      - postgres
+      - neo4j
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: gridlens-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:8000/api/v1
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: gridlens-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=gridlens
+      - POSTGRES_PASSWORD=gridlens_password
+      - POSTGRES_DB=gridlens_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  neo4j:
+    image: neo4j:5.18-community
+    container_name: gridlens-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/gridlens_password
+    volumes:
+      - neo4j_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  neo4j_data:
