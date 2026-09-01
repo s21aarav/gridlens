@@ -8,7 +8,7 @@
 
 GridLens is an **evidence-constrained agentic engineering investigation system** designed for substation protection and control (P&C) event root-cause analysis.
 
-> Implementation status: the current repository uses a deterministic in-memory OGS-01 topology, local Markdown corpus, and seeded incident/COMTRADE files. PostgreSQL, pgvector, Neo4j, and a compiled LangGraph workflow are architectural extension points, not active runtime dependencies in the demo path.
+> Implementation status: the current repository uses a deterministic in-memory OGS-01 topology, local Markdown corpus, and seeded incident/COMTRADE files. The compiled LangGraph router and vector-store interface are active; PostgreSQL/pgvector and Neo4j are replaceable production adapters rather than required demo services.
 
 ```mermaid
 graph TD

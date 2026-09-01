@@ -29,6 +29,20 @@ async def test_incident_a_investigation():
 
 
 @pytest.mark.asyncio
+async def test_compiled_langgraph_router_executes_when_available():
+    workflow = GridLensInvestigationWorkflow()
+    if workflow._compiled_graph is None:
+        pytest.skip("LangGraph optional dependency is not installed in this environment.")
+
+    request = InvestigationRequest(user_query="Which relay protects feeder F12?")
+    result = await workflow.run_investigation(request)
+
+    assert result.investigation_type.value == "TOPOLOGY_INQUIRY"
+    assert result.verified_facts
+    assert result.verified_facts[0].verification_status.value == "VERIFIED"
+
+
+@pytest.mark.asyncio
 async def test_incident_b_contradiction_resolution():
     workflow = GridLensInvestigationWorkflow()
     with open("data/seed/incidents.json", "r") as f:

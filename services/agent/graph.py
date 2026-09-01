@@ -32,6 +32,11 @@ from services.agent.claims import ClaimConstructor
 from services.agent.verifier import ClaimVerifier
 from services.agent.report_generator import ReportGenerator
 
+try:
+    from langgraph.graph import END, START, StateGraph
+except ImportError:  # Keep the deterministic demo runnable without optional extras.
+    END = START = StateGraph = None
+
 
 class InvestigationState(BaseModel):
     investigation_id: str
@@ -77,6 +82,42 @@ class GridLensInvestigationWorkflow:
         self.retrieval_tool = retrieval_tool or RetrievalTool()
         self.history_tool = history_tool or HistoryTool()
         self.report_generator = ReportGenerator()
+        self._compiled_graph = self._build_langgraph()
+
+    def _build_langgraph(self):
+        """Build the conditional LangGraph router when the optional dependency is installed."""
+        if StateGraph is None:
+            return None
+        graph = StateGraph(dict)
+
+        async def classify_node(state: dict) -> dict:
+            inv_type, selected_tools = self.classify_query_intent(state["request"].user_query)
+            return {
+                "request": state["request"],
+                "incident_data": state.get("incident_data"),
+                "investigation_type": inv_type.value,
+                "selected_tools": selected_tools,
+            }
+
+        async def route_node(state: dict) -> dict:
+            result = await self._run_investigation_linear(
+                state["request"], incident_data=state.get("incident_data")
+            )
+            return {"result": result}
+
+        graph.add_node("classify_intent", classify_node)
+        routes = [item.value for item in InvestigationType]
+        for route in routes:
+            graph.add_node(route, route_node)
+        graph.add_edge(START, "classify_intent")
+        graph.add_conditional_edges(
+            "classify_intent",
+            lambda state: state["investigation_type"],
+            {route: route for route in routes},
+        )
+        for route in routes:
+            graph.add_edge(route, END)
+        return graph.compile()
 
     @classmethod
     def classify_query_intent(cls, user_query: str) -> Tuple[InvestigationType, List[str]]:
@@ -123,6 +164,18 @@ class GridLensInvestigationWorkflow:
         ]
 
     async def run_investigation(
+        self,
+        request: InvestigationRequest,
+        incident_data: Optional[Dict[str, Any]] = None,
+    ) -> InvestigationResult:
+        if self._compiled_graph is not None:
+            state = await self._compiled_graph.ainvoke(
+                {"request": request, "incident_data": incident_data}
+            )
+            return state["result"]
+        return await self._run_investigation_linear(request, incident_data)
+
+    async def _run_investigation_linear(
         self,
         request: InvestigationRequest,
         incident_data: Optional[Dict[str, Any]] = None,

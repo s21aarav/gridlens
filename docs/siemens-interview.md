@@ -6,6 +6,7 @@ GridLens is an evidence-constrained copilot for investigating substation protect
 
 ## What to emphasize
 
+- **Agentic orchestration:** use a compiled LangGraph StateGraph for conditional routing while keeping engineering tools deterministic.
 - **Industrial reasoning:** separate physics and configuration facts from language generation.
 - **Time-series analysis:** parse COMTRADE, calculate RMS/peak values, detect relay and breaker transitions, and identify truncated records.
 - **Explainability:** every displayed fact has a source, tool, provenance string, and verification status.
@@ -38,4 +39,4 @@ Replace seeded repositories with validated enterprise data adapters, integrate c
 
 ## Honest scope statement
 
-GridLens is a seeded research/demo system, not a protection-control system. Its benchmark demonstrates internal correctness on known scenarios; it does not establish field accuracy or authorization for live grid operations.
+GridLens is a seeded research/demo system, not a protection-control system. Its benchmark demonstrates internal correctness on known scenarios; it does not establish field accuracy or authorization for live grid operations. The seeded topology and local vector store are intentionally replaceable with enterprise PostgreSQL/pgvector and Neo4j adapters.

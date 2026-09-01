@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gridlens-api
+  labels:
+    app: gridlens-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gridlens-api
+  template:
+    metadata:
+      labels:
+        app: gridlens-api
+    spec:
+      containers:
+        - name: api
+          image: gridlens-api:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: gridlens-secrets
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gridlens-api
+spec:
+  selector:
+    app: gridlens-api
+  ports:
+    - port: 8000
+      targetPort: 8000
