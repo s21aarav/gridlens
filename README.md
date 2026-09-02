@@ -109,23 +109,7 @@ The repository includes a **26-case synthetic benchmark** spanning eight categor
 
 ---
 
-## 5. Technical Interview Defensibility Q&A
-
-**Q: How do you prevent the LLM from hallucinating the current?**  
-*A: The LLM never computes current. The COMTRADE analyzer deterministically executes full-cycle DFT/RMS calculations on the raw samples. The resulting numerical fact is stored in the Evidence Ledger and verified against analyzer output before report generation.*
-
-**Q: How do you know the relay protects F12?**  
-*A: That is an immutable topological fact retrieved through the repository boundary from the seeded OGS-01 topology store, not an LLM guess. A live Neo4j adapter is future production work.*
-
-**Q: What happens when the relay says Phase A but the waveform says Phase C?**  
-*A: The system records an explicit `CONFLICT_DETECTED` state, invokes the Configuration Validator to inspect secondary CT terminal mappings, identifies the transposed wiring (`RULE-MAP-003`), and resolves the contradiction safely (`CONFLICT_RESOLVED`).*
-
-**Q: What happens when data is incomplete?**  
-*A: The Contextual Sufficiency Gate tests the inquiry-specific evidence policy. If critical oscillography or calibration ratios are missing, GridLens halts and returns an explicit `INSUFFICIENT EVIDENCE` diagnosis.*
-
----
-
-## 6. Quickstart Guide
+## 5. Quickstart Guide
 
 ### Option 1: Docker Compose (Recommended)
 ```bash
@@ -162,7 +146,7 @@ The current API uses seeded local data and lightweight API-key authentication; i
 
 For production-like local testing, configure GRIDLENS_ENV=production and GRIDLENS_API_KEYS using the format documented in [.env.example](/Users/aaravsingh/Desktop/temp-gen/.env.example). The API then rejects requests without a configured key and ignores caller-supplied role fields.
 
-## 7. Repository Structure
+## 6. Repository Structure
 
 ```
 gridlens/
